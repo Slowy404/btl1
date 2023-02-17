@@ -158,38 +158,36 @@ void MushGhost(string mush_ghost, int line[], int &n2){
   }}
   inMush.close();
 }
-void Asclepius(string asclepius_pack,int r1,int c1,int &remedy,int &maidenkiss,int &phoenixdown){
-  ifstream isAsc(asclepius_pack);
-  if(!isAsc.is_open()){
+void Asclepius(string asclepius_pack, int r1,int c1,int &remedy, int &maidenkiss,int &phoenixdown){
+  int M[10000];
+  ifstream inasc(asclepius_pack);
+  if(!inasc.is_open()){
   } else {
-    isAsc>>r1;
-    // isAsc.ignore();
-    isAsc>>c1;
+    inasc>>r1;
+    inasc.ignore();
+    inasc>>c1;
+    for(int i=0;i<r1;i++){
+      int k=0;
+      for(int j=0;j<c1;j++){
+        inasc>>M[j];
+      }
+      for(int j=0;j<c1;j++){
+        if(M[j]==16){
+          remedy++;
+          k++;
+        } else if(M[j]==17){
+          maidenkiss++;
+          k++;
+        } else if(M[j]==18){
+          phoenixdown++;
+          k++;
+        } else;
+        if(k==3) break;
+      }
+    }
     
   }
-  int M[1000][1000];
-  for(int i=0;i<r1;i++){
-    for(int j=0;j<c1;j++){
-      isAsc>>M[i][j];
-    }
-  }
-  for(int i=0;i<r1;i++){
-    int k=0;
-    for(int j=0;j<c1;j++){
-      if(M[i][j]==16){
-        k++;
-        remedy++;
-      } else if(M[i][j]==17){
-        k++;
-        maidenkiss++;
-      } else if(M[i][j]==18){
-        k++;
-        phoenixdown++;
-      } else;
-      if(k==3) break;
-    }
-  }
-  isAsc.close();
+  inasc.close();
 }
 void merlin(string merlin_pack,int &HP,int MaxHP){
   ifstream inMerlin(merlin_pack);
