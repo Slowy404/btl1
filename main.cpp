@@ -122,22 +122,16 @@ bool prime(int HP){
   return 1;
 }
 int readNumber(int map[],string len){
-    // Tạo một mảng để lưu các số nguyên
     int j = 1;
-    // Duyệt qua chuỗi len
     int start = 0;
     int end = len.find(" ");
     while (end != string::npos) {
-        // Lấy chuỗi con tương ứng với mỗi số nguyên
         string str_num = len.substr(start, end - start);
-        // Chuyển đổi chuỗi con sang kiểu số nguyên và lưu vào mảng
         map[j] = stoi(str_num);
         j++;
-        // Di chuyển vị trí bắt đầu và kết thúc tới vị trí của số nguyên kế tiếp
         start = end + 1;
         end = len.find(" ", start);
     }
-    // Lấy số nguyên cuối cùng trong chuỗi
     string str_num = len.substr(start, end);
     map[j] = stoi(str_num);
     j++;
@@ -296,7 +290,7 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
     /*Xu li file IO*/
     int map[10000];
     int knight_info[5];
-    ifstream inFile(file_input); // tên file cần đọc
+    ifstream inFile(file_input);
     if (!inFile.is_open()) {
         rescue=0;
     }
