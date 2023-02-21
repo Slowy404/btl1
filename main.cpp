@@ -26,9 +26,9 @@ int sl(int levelO,int level){
 void checkLevel(int &level){
   if(level>10) level=10;
 }
-int damage1to5(int HP,int levelO,int &phoenixdown,int MaxHP,int codeEnvent, int &rescue){
+int damage1to5(int HP,int levelO,int &phoenixdown,int MaxHP,int codeEvent, int &rescue){
   double baseDamage ;
-  switch (codeEnvent) {
+  switch (codeEvent) {
   case 1:
     baseDamage=1;
     break;
@@ -147,9 +147,11 @@ void MushGhost(string mush_ghost, int line[], int &n2){
   string line2;
   while(!inMush.eof()){
     getline(inMush,line2,',');
+    // cout<<line2<<" ";
     line[i]=stoi(line2);
     i++;
   }}
+  // cout<<endl;
   inMush.close();
 }
 void Asclepius(string asclepius_pack, int r1,int c1,int &remedy, int &maidenkiss,int &phoenixdown){
@@ -290,11 +292,6 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
     /*Xu li file IO*/
     int map[10000];
     int knight_info[5];
-    ifstream inFile(file_input);
-    if (!inFile.is_open()) {
-        rescue=0;
-    }
-    /*Gia tri*/
     rescue=-1;
     int local=1;
     int levelO;
@@ -321,15 +318,20 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
     int Merlin=0;
     int j=1;
     int asclepius=0;
-    std::getline(inFile,line);
+    //xu li file
+    ifstream inFile(file_input);
+    if (!inFile.is_open()) {
+        rescue=0;
+    }
+    getline(inFile,line);
     int knigthLength;
     knigthLength = readNumber(knight_info,line);
-    std::getline(inFile,line2);
+    getline(inFile,line2);
     int mapLength;
     mapLength = readNumber(map,line2);
-    std::getline(inFile,mush_ghost,',');
-    std::getline(inFile,merlin_pack,',');
-    std::getline(inFile,asclepius_pack);
+    getline(inFile,mush_ghost,',');
+    getline(inFile,merlin_pack,',');
+    getline(inFile,asclepius_pack);
     inFile.close();
     /*Thong tin hiep si*/
     HP=knight_info[1];
@@ -337,6 +339,9 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
     remedy=knight_info[3];
     maidenkiss=knight_info[4];
     phoenixdown=knight_info[5];
+    // cout<<line<<endl;
+    // cout<<line2<<endl;
+    // cout<<mush_ghost<<" "<<merlin_pack<<" "<<asclepius_pack<<endl;
     int const MaxHP=HP;
     int check_people=0;
     int counter=0;
@@ -382,6 +387,7 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
         checkHP(HP,rescue,phoenixdown,check_people,MaxHP,counter);
       }
       break;
+      // cout<<level;
     case 6:
       if(Lancelot==1 || Arthur==1){
         level+=2;
@@ -398,12 +404,13 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
       } else if (solo == -1){
         check_people=1;
         counter=4;
+        int HP_pre=HP;
         HP=lowpeopleHP(HP,MaxHP,check_people);
         if(remedy >= 1){
           check_people = 0;
           remedy--;
           counter=0;
-          HP=HP*5;
+          HP=HP_pre;
         } else {
           if(HP<=0 && phoenixdown>0){
             check_people = 0;
@@ -482,17 +489,17 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
       string myString = to_string(map[local]);
       if(myString.find("13")==0){
         while(myString[iString]){
-          switch(myString[iString])
-          {
-            if(HP>MaxHP){
+           if(HP > MaxHP){
               HP=MaxHP;
-            } else if(HP<0 && phoenixdown>0){
+            } else if(HP < 0 && phoenixdown>0){
               phoenixdown--;
               HP=MaxHP;
             } else {
               rescue=0;
               break;
-            }
+          }
+          switch(myString[iString])
+          {
             case '1':
               MushGhost(mush_ghost,len,n2);
               maxi=len[0];
@@ -549,7 +556,7 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
       check_frog=0;
       counterf=0;
     }
-    if(check_people == 1 && phoenixdown>0){
+    if(check_people == 1 && remedy>0){
       check_people=0;
       phoenixdown--;
       HP=HP*5;
@@ -560,5 +567,6 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
     }
     checkHP(HP,rescue,phoenixdown,check_people,MaxHP,counter);
     if(local==mapLength && rescue==-1) rescue=1;
-    }
+    display(HP, level, remedy, maidenkiss, phoenixdown, rescue);
+  }
 }
