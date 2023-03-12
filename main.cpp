@@ -1,5 +1,4 @@
 #include "knight.h"
-#include <iomanip>
 void display(int HP, int level, int remedy, int maidenkiss, int phoenixdown, int rescue) {
     cout << "HP=" << HP
         << ", level=" << level
@@ -8,28 +7,28 @@ void display(int HP, int level, int remedy, int maidenkiss, int phoenixdown, int
         << ", phoenixdown=" << phoenixdown
         << ", rescue=" << rescue << endl;
 }
-int readNumber(int map[],string len){
+int readNumber(int map[],string map_str[],string len){
     int j = 1;
     int start = 0;
     int end = len.find(" ");
     while (end != string::npos) {
         string str_num = len.substr(start, end - start);
-        map[j] = stoi(str_num);
+        map_str[j]=str_num.substr();
+        map[j]=atoi(str_num.c_str());
         j++;
         start = end + 1;
         end = len.find(" ", start);
     }
     string str_num = len.substr(start, end);
-    map[j] = stoi(str_num);
+    map[j]=atoi(str_num.c_str());
+    map_str[j]=str_num.substr();
     j++;
     return j;
 }
-/*hàm trong while*/
 void checkLevel(int &level){
   if(level>10) level=10;
 }
 
-/*mã sự kiện từ 1 đến 5*/
 int lvO(int local){
   int b = local%10;
   int level = local > 6 ? (b > 5 ? b : 5) : b;
@@ -45,7 +44,7 @@ int sl(int levelO,int level){
   }
   return 0;
 }
-int damage1to5(int HP,int levelO,int &phoenixdown,int MaxHP,int codeEvent, int &rescue){
+int damage1to5(int HP,int levelO,int &phoenixdown,int MaxHP,int codeEvent, int &rescue,int &check_people){
   double baseDamage ;
   switch (codeEvent) {
   case 1:
@@ -70,22 +69,23 @@ int damage1to5(int HP,int levelO,int &phoenixdown,int MaxHP,int codeEvent, int &
     rescue = 0;
     return HP;
   } else if(HP <= 0 && phoenixdown > 0){
+    check_people=0;
     phoenixdown--;
     rescue = -1;
     return MaxHP;
   } else ;
   return HP;
 }
-void checkHP(int HP,int &rescue,int &phoenixdown,int &check,int MaxHP,int &counter){
+void checkHP(int &HP,int &rescue,int &phoenixdown,int &check,int MaxHP,int &counter){
   if(HP<0 && phoenixdown < 1) rescue =0;
-  if(HP<0 && phoenixdown > 1) {
+  if(HP <= 0 && phoenixdown > 0) {
     phoenixdown--;
     HP=MaxHP;
     counter=0;
     check=0;
   }
+  if(HP>MaxHP) HP=MaxHP;
 }
-/*Sự kiện 6*/
 int lowpeopleHP(int HP){
     if(HP < 5){
       HP=1;
@@ -96,7 +96,6 @@ int lowpeopleHP(int HP){
     }
 }
 void cure(int &check_people,int &check_frog, int &maidenkiss, int &remedy, int &regLevel,int &counter,int &counterf, int &HP ,int &level){
-    //thuốc giải
     if(check_people==1 && remedy > 0){
         check_people = 0;
         remedy--;
@@ -110,7 +109,6 @@ void cure(int &check_people,int &check_frog, int &maidenkiss, int &remedy, int &
         level=regLevel;
     }
 }
-// sự kiện 11
 bool prime(int n) 
 { 
     if(n<=1) return 0;
@@ -146,7 +144,6 @@ int MushMario(int level,int phoenixdown, int HP, int MaxHP){
   }
   return HP;
 }
-// sự kiện 12
 int  Fibonacci_MushFibo(int HP){
      if (HP == 1) {
         return 1;
@@ -154,7 +151,7 @@ int  Fibonacci_MushFibo(int HP){
         int pre = 0;
         int cur = 1;
         int next = 1;
-        while (next < HP) {// coi lại 
+        while (next < HP) { 
             pre = cur;
             cur = next;
             next = pre + cur;
@@ -166,7 +163,6 @@ void clam(int &item){
   item++;
   if(item>99) item=99;
 }
-// sự kiện 13 ms
 void MushGhost(string mush_ghost, int line[], int &n2){
     ifstream inMush(mush_ghost);
     if(!inMush.is_open()){
@@ -177,7 +173,7 @@ void MushGhost(string mush_ghost, int line[], int &n2){
     string line2;
     while(!inMush.eof()){
         getline(inMush,line2,',');
-        line[i]=stoi(line2);
+        line[i]=atoi(line2.c_str());
         i++;
     }}
     inMush.close();
@@ -191,14 +187,14 @@ int checkMountain(int len[],int n2,int &mtx,int &mti) {
         }
     }
     for(int i=0;i<j-1;i++){
-        if(len[i]>len[i+1]) {
+        if(len[i]>=len[i+1]) {
         mtx = -2; 
         mti = -3;
         return 0;
         }
     }
     for(int i=j;i<n2-1;i++){
-        if(len[i]<len[i+1]) {
+        if(len[i]<=len[i+1]) {
         mtx = -2; 
         mti = -3;
         return 0;
@@ -236,6 +232,11 @@ void checkMush3_4(int len1[],int len[],int n2,int &maxi2,int &mini2,int &max2_3x
         mini2=i;
         break;
         }
+    }
+    if(max==min){
+      max2_3x=-5;
+      max2_3i=-7;
+      return;
     }
     max2_3x=-1;
     max2_3i=-1;
@@ -296,6 +297,7 @@ void merlin(string merlin_pack,int &HP,int MaxHP){
     string merlin="merlin";
     for(int i=0;i<n9;i++){
       getline(inMerlin,item_name);
+      string item_name2= item_name.substr();
       for(int i=0;i<item_name.length();i++){
         item_name[i] = tolower(item_name[i]);
       }
@@ -307,17 +309,23 @@ void merlin(string merlin_pack,int &HP,int MaxHP){
         }
       }
       if(isItem==1){
-        if(item_name.find("merlin")==string::npos){
-          HP=HP+2;
-        } else HP=HP+3;
+        if(item_name2.find("merlin") != string::npos || item_name2.find("Merlin") != string::npos){
+          HP+=3;
+        } else HP+=2;
         if(HP>MaxHP) HP=MaxHP;
       }
     }
   }
   inMerlin.close();
 }
+void checkInfo( int & HP, int & level, int & remedy, int & maidenkiss, int & phoenixdown ,int & rescue){
+  if(remedy>99) remedy=99;
+  if(phoenixdown>99) phoenixdown=99;
+  if(maidenkiss>99) maidenkiss=99;
+  if(HP>999) HP=999;
+  if(remedy<0 || phoenixdown<0 || maidenkiss<0 || level < 0 || HP<0) rescue=0;
+}
 void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, int & maidenkiss, int & phoenixdown, int & rescue) {
-    /*Khai báo biến mặc định */
     int map[10000];
     int knight_info[5];
     rescue=-1;
@@ -344,36 +352,33 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
     int asclepius=0;
     int small;
     int large;
-    /*Đọc file*/
-    /*----Khai báo biến------*/
     string line;
     string line2;
     string mush_ghost;
     string merlin_pack;
     string asclepius_pack;
+    string map_str[100];
+    string map_thua[100];
     int knigthLength;
     int mapLength;
-    /*----Xử lí file--------*/
     ifstream inFile(file_input);
     if (!inFile.is_open()) {
         rescue=0;
     }
     getline(inFile,line);
-    knigthLength = readNumber(knight_info,line);
+    knigthLength = readNumber(knight_info,map_thua,line);
     getline(inFile,line2);
-    mapLength = readNumber(map,line2);
+    mapLength = readNumber(map,map_str,line2);
     getline(inFile,mush_ghost,',');
     getline(inFile,asclepius_pack,',');
     getline(inFile,merlin_pack);
     inFile.close();
-    /*Thông tin hiệp sĩ*/
     HP=knight_info[1];
     level=knight_info[2];
     remedy=knight_info[3];
     maidenkiss=knight_info[4];
     phoenixdown=knight_info[5];
     int const MaxHP=HP;
-    /*khai bao cac biên dếm*/
     int check_people=0;
     int counter=0;
     int check_frog=0;
@@ -381,7 +386,7 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
     int regLevel=level;
     int Lancelot=0;
     int iString=2;
-    /*Xử lí trò chơi*/
+    checkInfo(HP,level,remedy,maidenkiss,phoenixdown ,rescue);
     if(HP==999) Arthur=1;
     if(prime(HP)) Lancelot=1;
     while(rescue == -1){
@@ -403,9 +408,8 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
             if(solo == 1){
                 level++;
             } else if (solo == 0){
-                // Không làm gì cả
             } else if (solo == -1){
-                HP = damage1to5(HP,levelO,phoenixdown,MaxHP,map[local],rescue);
+                HP = damage1to5(HP,levelO,phoenixdown,MaxHP,map[local],rescue,check_people);
             } else ;
             break;
         case 6:
@@ -419,7 +423,6 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
             if(solo == 1){
                 level+=2;
             } else if (solo == 0){
-                // Không làm gì cả
             } else if (solo == -1){
                 check_people=1;
                 counter=4;
@@ -451,7 +454,6 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
             if(solo == 1){
                 level+=2;
             } else if (solo == 0){
-                // Không làm gì cả
             } else if (solo == -1){
                 check_frog=1;
                 counterf=4;
@@ -505,15 +507,17 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
             } 
             break;
         default:
-            string myString = to_string(map[local]);
+            string myString = map_str[local];
             if(myString.find("13")==0){
                 while(myString[iString]){
-                    if(HP > MaxHP) HP=MaxHP; else if(HP < 0 && phoenixdown>0){
+                    if(HP > MaxHP){
+                      HP=MaxHP;
+                    }  else if(HP <= 0 && phoenixdown>0){
                     phoenixdown--;
                     check_people = 0;
                     counter=0;
                     HP=MaxHP;
-                    } else if (HP<0){
+                    } else if (HP<=0){
                         rescue = 0;
                         break;
                     } else ;
@@ -547,6 +551,10 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
                         case '4':
                             MushGhost(mush_ghost,len,n2);
                             checkMush3_4(len1,len,n2,maxi2,mini2,max2_3x,max2_3i);
+                            if(n2<2){
+                              max2_3x=-7;
+                              max2_3i=-5;
+                            }
                             HP=HP - (max2_3x+max2_3i);
                             break;
                         default:
@@ -558,11 +566,17 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
             }
             break;
         }
+    iString=2;
     local++;  
+    if(HP>999) HP=MaxHP;
     if(remedy>99) remedy=99;
     if(phoenixdown>99) phoenixdown=99;
     if(maidenkiss>99) maidenkiss=99;
-    /*kiểm tra còn trạng thái ếch và người tí hon không*/
+    if(HP<=0 && phoenixdown<1){
+      rescue=0;
+      display(HP, level, remedy, maidenkiss, phoenixdown, rescue);
+      break;
+    }
     if(counter==1 && check_people==1){
       check_people=0;
       HP=HP*5;
@@ -584,4 +598,5 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
     if(local == mapLength && rescue==-1) rescue=1;
     display(HP, level, remedy, maidenkiss, phoenixdown, rescue);
     }
+  return ;
 }
